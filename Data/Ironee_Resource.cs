@@ -1,3 +1,4 @@
+using com.IronicEntertainment.Scripts.Flow;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -43,7 +44,7 @@ namespace com.IronicEntertainment.Scripts.Data
             }
         }
         private string _ParentResourcePath = "JSON/"; // Ensure trailing slash consistency
-        private string _ProjectDirectory { get; set; }
+        private string _ProjectDirectory { get => GameConfig.ResLocation; }
 
         private string _FilePath;
 
