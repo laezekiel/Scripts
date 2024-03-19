@@ -107,8 +107,20 @@ namespace com.IronicEntertainment.Scripts.Data
         }
 
         public Ironee_Resource(IR_Parameters pParams)
-        {
-            new Ironee_Resource(pParams.name, pParams.isVariant, pParams.variant, pParams.allNew);
+        {            
+            Set(pParams.name, pParams.variant);
+
+            string path = $"{_ProjectDirectory}{_ParentResourcePath}";
+
+            CreateDirectory(path);
+
+            path = CreateResourceDirectory(path);
+
+            if (pParams.isVariant)
+            {
+                CreateResourceFileVariant(path, pParams.allNew, pParams.variant);
+            }
+            else CreateResourceFile(path);
         }
         public Ironee_Resource(string filename = "", bool isVariant = false, string variantname = "", bool allnew =true)
         {
@@ -417,13 +429,13 @@ namespace com.IronicEntertainment.Scripts.Data
                     }
                     break;
                 }
-
-                _Imported = true;
             }
             catch (Exception ex)
             {
                 GD.Print("An error occurred during import: " + ex.Message);
             }
+
+            _Imported = true;
 
         }
 

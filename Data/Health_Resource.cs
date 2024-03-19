@@ -18,10 +18,10 @@ namespace com.IronicEntertainment.Scripts.Data
         public enum Health_State
         {
             Full = 4,
-            OverHalf = 3,
-            OverQuarter = 2,
-            UnderQuarter = 1,
-            Depleted = 1,
+            UnderFull = 3,
+            UnderHalf = 2,
+            UnderHeighth = 1,
+            Depleted = 0,
         }
 
         private int _Points;
