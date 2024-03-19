@@ -1,7 +1,6 @@
-using com.IronicEntertainment.Scripts.Flow;
 using System;
-using Godot;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
@@ -44,7 +43,7 @@ namespace com.IronicEntertainment.Scripts.Data
             }
         }
         private string _ParentResourcePath = "JSON/"; // Ensure trailing slash consistency
-        private string _ProjectDirectory { get => GameConfig.ResLocation; }
+        private string _ProjectDirectory { get; set; }
 
         private string _FilePath;
 
@@ -150,7 +149,7 @@ namespace com.IronicEntertainment.Scripts.Data
                 catch (Exception e)
                 {
                     
-                    GD.PrintErr($"Failed to create directory: {e.Message}");
+                    Debug.WriteLine($"Failed to create directory: {e.Message}");
                     // Handle error gracefully
                 }
             }
@@ -169,7 +168,7 @@ namespace com.IronicEntertainment.Scripts.Data
                 }
                 catch (Exception e)
                 {
-                    GD.PrintErr($"Failed to create resource directory: {e.Message}");
+                    Debug.WriteLine($"Failed to create resource directory: {e.Message}");
                     // Handle error gracefully
                 }
             }
@@ -207,11 +206,11 @@ namespace com.IronicEntertainment.Scripts.Data
                         string jsonContent = $"[\n{ToJSON()}\n]";
                         writer.Write(jsonContent);
                     }
-                    GD.Print("Resource file created successfully.");
+                    Debug.WriteLine("Resource file created successfully.");
                 }
                 catch (Exception e)
                 {
-                    GD.PrintErr($"Failed to create resource file: {e.Message}");
+                    Debug.WriteLine($"Failed to create resource file: {e.Message}");
                     // Handle error gracefully
                 }
             }
@@ -269,11 +268,11 @@ namespace com.IronicEntertainment.Scripts.Data
                         writer.Write(jsonContent);
                     }
 
-                    GD.Print("Resource file created successfully.");
+                    Debug.WriteLine("Resource file created successfully.");
                 }
                 catch (Exception e)
                 {
-                    GD.PrintErr($"Failed to create resource file: {e.Message}");
+                    Debug.WriteLine($"Failed to create resource file: {e.Message}");
                 }
             }
             else
@@ -424,7 +423,7 @@ namespace com.IronicEntertainment.Scripts.Data
                         }
                         else
                         {
-                            GD.PrintErr($"Property '{lKV.Key}' not found in the class.");
+                            Debug.WriteLine($"Property '{lKV.Key}' not found in the class.");
                         }
                     }
                     break;
@@ -432,7 +431,7 @@ namespace com.IronicEntertainment.Scripts.Data
             }
             catch (Exception ex)
             {
-                GD.Print("An error occurred during import: " + ex.Message);
+                Debug.WriteLine("An error occurred during import: " + ex.Message);
             }
 
             _Imported = true;
@@ -469,7 +468,7 @@ namespace com.IronicEntertainment.Scripts.Data
             }
             catch (Exception ex)
             {
-                GD.Print("An error occurred during export: " + ex.Message);
+                Debug.WriteLine("An error occurred during export: " + ex.Message);
             }
         }
 
