@@ -7,15 +7,11 @@ using UnityEngine;
 
 namespace com.IronicEntertainment.Scripts.Data
 {
-    public class Health_Resource : Ironee_Resource
+    [Serializable]
+    public class Health_Resource : ScriptableObject
     {
-        public Health_Resource(string filename = "", bool allnew = true) : base(new IR_Parameters(filename, allnew))
-        {
-
-        }
-
-        private int _Max = 1;
-
+        [SerializeField] private int _Max = 1;
+        [SerializeField] private string _Name= "Default";
         public enum Health_State
         {
             Full = 4,
@@ -29,15 +25,14 @@ namespace com.IronicEntertainment.Scripts.Data
         private int _Temp = 0;
         private Health_State _State = Health_State.Full;
 
-        public int Points { get => _Points; set { m_PropertiesG[nameof(Points)] = _Points = value; Export(); } }
-        public int Max { get => _Max; set { m_PropertiesG[nameof(Max)] = _Max = value; Export(); } }
-        public int Temp { get => _Temp; set { m_PropertiesG[nameof(Temp)] = _Temp = value; Export(); } }
-        public Health_State State { get => _State; set { m_PropertiesG[nameof(State)] =_State = value; Export(); } }
+        public int Points { get => _Points; set => _Points = value; }
+        public int Max { get => _Max; set => _Max = value; }
+        public int Temp { get => _Temp; set => _Temp = value; }
+        public Health_State State { get => _State; set => _State = value; }
 
         public void Init(int max)
         {
             Points = Max = max;
-            Export();
         }
 
     }
