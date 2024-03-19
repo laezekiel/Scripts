@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using UnityEngine;
 
 // Author: Ironee
 
@@ -149,7 +149,7 @@ namespace com.IronicEntertainment.Scripts.Data
                 catch (Exception e)
                 {
                     
-                    Debug.WriteLine($"Failed to create directory: {e.Message}");
+                    Debug.Log($"Failed to create directory: {e.Message}");
                     // Handle error gracefully
                 }
             }
@@ -168,7 +168,7 @@ namespace com.IronicEntertainment.Scripts.Data
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"Failed to create resource directory: {e.Message}");
+                    Debug.Log($"Failed to create resource directory: {e.Message}");
                     // Handle error gracefully
                 }
             }
@@ -206,11 +206,11 @@ namespace com.IronicEntertainment.Scripts.Data
                         string jsonContent = $"[\n{ToJSON()}\n]";
                         writer.Write(jsonContent);
                     }
-                    Debug.WriteLine("Resource file created successfully.");
+                    Debug.Log("Resource file created successfully.");
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"Failed to create resource file: {e.Message}");
+                    Debug.Log($"Failed to create resource file: {e.Message}");
                     // Handle error gracefully
                 }
             }
@@ -253,7 +253,7 @@ namespace com.IronicEntertainment.Scripts.Data
 
                     }
 
-                    Dictionary<string, object>[] jsonObject = JsonSerializer.Deserialize<Dictionary<string, object>[]>(jsonContent);
+                    Dictionary<string, object>[] jsonObject = JsonUtility.FromJson<Dictionary<string, object>[]>(jsonContent);
 
                     using (StreamWriter writer = new StreamWriter(_FilePath)) { 
                         jsonContent = jsonContent.Remove(jsonContent.Length - 2);
@@ -268,11 +268,11 @@ namespace com.IronicEntertainment.Scripts.Data
                         writer.Write(jsonContent);
                     }
 
-                    Debug.WriteLine("Resource file created successfully.");
+                    Debug.Log("Resource file created successfully.");
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"Failed to create resource file: {e.Message}");
+                    Debug.Log($"Failed to create resource file: {e.Message}");
                 }
             }
             else
@@ -280,7 +280,7 @@ namespace com.IronicEntertainment.Scripts.Data
 
                 string jsonText = System.IO.File.ReadAllText(_FilePath);
 
-                Dictionary<string, object>[] jsonObject = JsonSerializer.Deserialize<Dictionary<string, object>[]>(jsonText);
+                Dictionary<string, object>[] jsonObject = JsonUtility.FromJson<Dictionary<string, object>[]>(jsonText);
                 _Variant = "_" + variantname;
 
                 if (_Variant == "_") _Variant = "_" + jsonObject.Length;
@@ -357,13 +357,8 @@ namespace com.IronicEntertainment.Scripts.Data
 
         public string ToJSON(bool indented = true, Dictionary<string, object> jsonObject = null)
         {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = indented
-            };
-
-            if(jsonObject == null) return JsonSerializer.Serialize(m_PropertiesG, options);
-            else return JsonSerializer.Serialize(jsonObject, options);
+            if (jsonObject == null) return JsonUtility.ToJson(m_PropertiesG, indented);
+            else return JsonUtility.ToJson(jsonObject, indented);
         }
 
 
@@ -373,7 +368,7 @@ namespace com.IronicEntertainment.Scripts.Data
             {
                 string jsonText = System.IO.File.ReadAllText(_FilePath);
 
-                Dictionary<string, object>[] jsonObject = JsonSerializer.Deserialize<Dictionary<string, object>[]>(jsonText);
+                Dictionary<string, object>[] jsonObject = JsonUtility.FromJson<Dictionary<string, object>[]>(jsonText);
 
                 foreach (Dictionary<string,object> lDic in jsonObject)
                 {
@@ -390,7 +385,7 @@ namespace com.IronicEntertainment.Scripts.Data
                             if (property.PropertyType.IsArray)
                             {
                                 // Convert the value to an array and set the property
-                                Array convertedArray = JsonSerializer.Deserialize<Array>(lKV.Value.ToString());
+                                Array convertedArray = JsonUtility.FromJson<Array>(lKV.Value.ToString());
                                 property.SetValue(this, convertedArray);
                             }
                             else if (property.PropertyType.IsGenericType &&
@@ -398,7 +393,7 @@ namespace com.IronicEntertainment.Scripts.Data
                             {
                                 // Convert the value to a list and set the property
                                 Type listType = property.PropertyType.GetGenericArguments()[0];
-                                object convertedList = JsonSerializer.Deserialize(lKV.Value.ToString(), typeof(List<>).MakeGenericType(listType));
+                                object convertedList = JsonUtility.FromJson(lKV.Value.ToString(), typeof(List<>).MakeGenericType(listType));
                                 property.SetValue(this, convertedList);
                             }
                             else if (property.PropertyType.IsGenericType &&
@@ -407,7 +402,7 @@ namespace com.IronicEntertainment.Scripts.Data
                                 // Convert the value to a dictionary and set the property
                                 Type[] dictionaryTypes = property.PropertyType.GetGenericArguments();
                                 Type dictionaryType = typeof(Dictionary<,>).MakeGenericType(dictionaryTypes);
-                                object convertedDictionary = JsonSerializer.Deserialize(lKV.Value.ToString(), dictionaryType);
+                                object convertedDictionary = JsonUtility.FromJson(lKV.Value.ToString(), dictionaryType);
                                 property.SetValue(this, convertedDictionary);
                             }
                             else
@@ -418,12 +413,12 @@ namespace com.IronicEntertainment.Scripts.Data
                                     property.SetValue(this, lKV.Value.ToString());
                                 else if (property.PropertyType == typeof(char))
                                     property.SetValue(this, lKV.Value.ToString().ToCharArray()[0]);
-                                else property.SetValue(this, JsonSerializer.Deserialize(lKV.Value.ToString(), property.PropertyType));
+                                else property.SetValue(this, JsonUtility.FromJson(lKV.Value.ToString(), property.PropertyType));
                             }
                         }
                         else
                         {
-                            Debug.WriteLine($"Property '{lKV.Key}' not found in the class.");
+                            Debug.Log($"Property '{lKV.Key}' not found in the class.");
                         }
                     }
                     break;
@@ -431,7 +426,7 @@ namespace com.IronicEntertainment.Scripts.Data
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("An error occurred during import: " + ex.Message);
+                Debug.Log("An error occurred during import: " + ex.Message);
             }
 
             _Imported = true;
@@ -445,7 +440,7 @@ namespace com.IronicEntertainment.Scripts.Data
             {
                 string jsonText = System.IO.File.ReadAllText(_FilePath);
 
-                Dictionary<string, object>[] jsonObject = JsonSerializer.Deserialize<Dictionary<string, object>[]>(jsonText);
+                Dictionary<string, object>[] jsonObject = JsonUtility.FromJson<Dictionary<string, object>[]>(jsonText);
                 for (int i = 0; i < jsonObject.Length; i++)
                 {
                     if (jsonObject[i][nameof(Name)].ToString() != Name) continue;
@@ -468,7 +463,7 @@ namespace com.IronicEntertainment.Scripts.Data
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("An error occurred during export: " + ex.Message);
+                Debug.Log("An error occurred during export: " + ex.Message);
             }
         }
 

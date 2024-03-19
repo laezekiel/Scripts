@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using com.IronicEntertainment.Scripts.Data;
 using static com.IronicEntertainment.Scripts.Data.Health_Resource;
+using UnityEngine;
 
 // Author: Ironee
 
@@ -13,23 +12,26 @@ namespace com.IronicEntertainment.Scripts.Component
     /// <summary>
     /// Represents a health component for a game entity, providing functionality for health management, damage, and healing.
     /// </summary>
-    public class Health_Component
+    public class Health_Component : MonoBehaviour
     {
-        private int _OriginMax = 5;
-        private string _Health_Name = "Default";
-        private bool _Unique = false;
-        private bool _ProportionalHealthRise = true;
+        [SerializeField] private int _OriginMax = 5;
+        [SerializeField] private string _Health_Name = "Default";
+        [SerializeField] private bool _Unique = false;
+        [SerializeField] private bool _ProportionalHealthRise = true;
 
 
-
-        public Health_Component(int originMax, string health_Name, bool proportionalHealthRise, bool unique)
+        private void Awake()
         {
-            _OriginMax = originMax;
-            _ProportionalHealthRise = proportionalHealthRise;
-            _Unique = unique;
+            _Health = new Health_Resource(_Health_Name, _Unique);
+            _Health.Init(_OriginMax);
 
-            _Health = new Health_Resource(health_Name, unique);
-            _Health.Init(originMax);
+            Damage_Taken += OnDamageTaken;
+            Heal_Received += OnHealReceived;
+            State_Update += OnStateUpdate;
+            Max_Rise += OnMaxRise;
+            Max_Lower += OnMaxLower;
+            Temp_Lower += OnTempLower;
+            Temp_Rise += OnTempRise;
         }
 
 
@@ -221,38 +223,50 @@ namespace com.IronicEntertainment.Scripts.Component
 
         private void OnDamageTaken(int damage, int health)
         {
-            Debug.WriteLine($"You have taken {damage} damage. Your health is at {health}");
+            Debug.Log($"You have taken {damage} damage. Your health is at {health}");
         }
 
         private void OnHealReceived(int heal, int health)
         {
-            Debug.WriteLine($"You have received {heal} healing. Your health is now {health}");
+            Debug.Log($"You have received {heal} healing. Your health is now {health}");
         }
 
         private void OnStateUpdate(Health_State state)
         {
-            Debug.WriteLine($"{Points}/{Max}");
-            Debug.WriteLine($"Health state updated: {state}");
+            Debug.Log($"{Points}/{Max}");
+            Debug.Log($"Health state updated: {state}");
         }
 
         private void OnMaxRise(int points, int health)
         {
-            Debug.WriteLine($"Max health increased by {points}. Current health: {health}");
+            Debug.Log($"Max health increased by {points}. Current health: {health}");
         }
 
         private void OnMaxLower(int points, int health)
         {
-            Debug.WriteLine($"Max health decreased by {points}. Current health: {health}");
+            Debug.Log($"Max health decreased by {points}. Current health: {health}");
         }
 
         private void OnTempRise(int points, int health)
         {
-            Debug.WriteLine($"Temporary health increased by {points}. Current health: {health}");
+            Debug.Log($"Temporary health increased by {points}. Current health: {health}");
         }
 
         private void OnTempLower(int points, int health)
         {
-            Debug.WriteLine($"Temporary health decreased by {points}. Current health: {health}");
+            Debug.Log($"Temporary health decreased by {points}. Current health: {health}");
+        }
+
+        private void OnDestroy()
+        {
+
+            Damage_Taken = null;
+            Heal_Received = null;
+            State_Update = null;
+            Max_Rise = null;
+            Max_Lower = null;
+            Temp_Lower = null;
+            Temp_Rise = null;
         }
     }
 }
