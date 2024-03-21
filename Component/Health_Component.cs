@@ -14,16 +14,11 @@ namespace com.IronicEntertainment.Scripts.Component
     /// </summary>
     public class Health_Component : MonoBehaviour
     {
-        [SerializeField] private int _OriginMax = 5;
-        [SerializeField] private string _Health_Name = "Default";
-        [SerializeField] private bool _Unique = false;
-        [SerializeField] private bool _ProportionalHealthRise = true;
-
+        [SerializeField] private bool _ProportionalHealthRise;
 
         private void Awake()
         {
-            _Health = new Health_Resource(_Health_Name, _Unique);
-            _Health.Init(_OriginMax);
+            _Health.Init();
 
             Damage_Taken += OnDamageTaken;
             Heal_Received += OnHealReceived;
@@ -35,7 +30,7 @@ namespace com.IronicEntertainment.Scripts.Component
         }
 
 
-        private Health_Resource _Health;
+        [SerializeField ]private Health_Resource _Health;
 
         // Properties exposing health-related information
         public Health_State State { get { return _Health.State; } private set { _Health.State = value; State_Update?.Invoke( value); } }
