@@ -10,6 +10,18 @@ using Unity.VisualScripting;
 
 namespace com.IronicEntertainment.Editors
 {
+    //[CustomEditor(typeof(EEKeyValue), editorForChildClasses : true)]
+    //public class EEKVEditor : Editor
+    //{
+    //    EEKeyValue _Pair;
+
+    //    private void OnEnable()
+    //    {
+    //        _Pair = (EEKeyValue)target;
+    //    }
+    //}
+
+
     [CustomEditor(typeof(EditorEnum), editorForChildClasses : true)]
     public class EEEditor : Editor
     {
