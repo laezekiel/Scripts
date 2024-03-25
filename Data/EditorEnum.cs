@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using UnityEngine;
 
 // Author: Ironee
@@ -28,7 +29,6 @@ namespace com.IronicEntertainment.Editors.Data
 
         public string Value { get => _Enum.Values[_Index]; }
         public int Key { get => _Enum.Keys[_Index]; }
-
     }
 
     [CreateAssetMenu(menuName = "Tools/Dynamic Enum", fileName = "New Dynamic Enum")]
@@ -41,6 +41,11 @@ namespace com.IronicEntertainment.Editors.Data
         [SerializeField]
         private List<string> _Enum_Values_S = new List<string>() { "A",  "B" };
 
+        [SerializeField]
+        private List<string> _Enum_Values_T = new List<string>();
+
+        [SerializeField] private bool _ToType = false;
+
         public string Value(int key)
         {
             try
@@ -51,6 +56,66 @@ namespace com.IronicEntertainment.Editors.Data
             {
                 Debug.Log("The key is not in the enum");
                 return "";
+            }
+        }
+
+        public Type _Type(int key)
+        {
+            try
+            {
+                return Type.GetType("com.IronicEntertainment.Scripts.Data." + _Enum_Values_T[_Enum_Values_I.IndexOf(key)]);
+            }
+            catch
+            {
+                if (_ToType) Debug.Log("The type is not set corectly in the enum");
+                else Debug.Log("The type export is not set in the enum");
+
+                return null;
+            }
+        }
+
+        public Type _Type(string value)
+        {
+            try
+            {
+                return Type.GetType("com.IronicEntertainment.Scripts.Data." + _Enum_Values_T[_Enum_Values_S.IndexOf(value)]);
+            }
+            catch
+            {
+                if (_ToType) Debug.Log("The type is not set corectly in the enum");
+                else Debug.Log("The type export is not set in the enum");
+
+                return null;
+            }
+        }
+
+        public string TypeString(int key)
+        {
+            try
+            {
+                return _Enum_Values_T[_Enum_Values_I.IndexOf(key)];
+            }
+            catch
+            {
+                if (_ToType) Debug.Log("The type is not set corectly in the enum");
+                else Debug.Log("The type export is not set in the enum");
+
+                return null;
+            }
+        }
+
+        public string TypeString(string value)
+        {
+            try
+            {
+                return _Enum_Values_T[_Enum_Values_S.IndexOf(value)];
+            }
+            catch
+            {
+                if (_ToType) Debug.Log("The type is not set corectly in the enum");
+                else Debug.Log("The type export is not set in the enum");
+
+                return null;
             }
         }
 
@@ -125,6 +190,7 @@ namespace com.IronicEntertainment.Editors.Data
 
             _Enum_Values_I.Add(lKey);
             _Enum_Values_S.Add(lValue);
+            if (_ToType) _Enum_Values_T.Add("");
         }
 
 
@@ -132,6 +198,7 @@ namespace com.IronicEntertainment.Editors.Data
         {
             _Enum_Values_I.RemoveAt(pAt);
             _Enum_Values_S.RemoveAt(pAt);
+            if (_ToType) _Enum_Values_T.RemoveAt(pAt);
         }
 
 
@@ -139,6 +206,15 @@ namespace com.IronicEntertainment.Editors.Data
         {
             _Enum_Values_I.RemoveAt(_Enum_Values_S.IndexOf(pValue));
             _Enum_Values_S.Remove(pValue);
+            if (_ToType) _Enum_Values_T.RemoveAt(_Enum_Values_S.IndexOf(pValue));
+        }
+
+
+        public void Remove(int pKey)
+        {
+            _Enum_Values_I.Remove(pKey);
+            _Enum_Values_S.RemoveAt(_Enum_Values_I.IndexOf(pKey));
+            if (_ToType) _Enum_Values_T.RemoveAt(_Enum_Values_I.IndexOf(pKey));
         }
     }
 }
