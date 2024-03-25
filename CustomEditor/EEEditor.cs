@@ -5,29 +5,20 @@ using UnityEngine;
 using UnityEditor;
 using JetBrains.Annotations;
 using Unity.VisualScripting;
+using System.IO;
+using com.IronicEntertainment.Editors.Tools;
 
 // Author: Ironee
 
 namespace com.IronicEntertainment.Editors
 {
-    //[CustomEditor(typeof(EEKeyValue), editorForChildClasses : true)]
-    //public class EEKVEditor : Editor
-    //{
-    //    EEKeyValue _Pair;
-
-    //    private void OnEnable()
-    //    {
-    //        _Pair = (EEKeyValue)target;
-    //    }
-    //}
-
 
     [CustomEditor(typeof(EditorEnum), editorForChildClasses : true)]
     public class EEEditor : Editor
     {
         EditorEnum _Enum;
 
-
+        bool _Extensions;
 
         private void OnEnable()
         {
@@ -46,8 +37,12 @@ namespace com.IronicEntertainment.Editors
 
             serializedObject.Update();
 
-            List<string> _L_S = new List<string>(_Enum.Size);
-            List<int> _L_I = new List<int>(_Enum.Size);
+            CETools.ScriptButtonField(_Enum);
+
+
+            List<string> _L_S = new List<string>();
+            List<int> _L_I = new List<int>();
+            List<string> _L_T = new List<string>();
 
             EditorGUILayout.LabelField("Keys and Value :", titleLabel);
 
@@ -55,6 +50,8 @@ namespace com.IronicEntertainment.Editors
 
             SerializedProperty l_IntValue = serializedObject.FindProperty("_Enum_Values_I");
             SerializedProperty l_StringValue = serializedObject.FindProperty("_Enum_Values_S");
+            SerializedProperty l_TypeValue = serializedObject.FindPropertyOrFail("_Enum_Values_T");
+            SerializedProperty l_ToType = serializedObject.FindPropertyOrFail("_ToType");
 
             EditorGUILayout.BeginVertical();
             
@@ -82,7 +79,34 @@ namespace com.IronicEntertainment.Editors
             EditorGUILayout.Space(5f);
 
             ButtonPM(buttonWidth);
-            
+            serializedObject.ApplyModifiedProperties();
+
+            serializedObject.Update();
+
+            EditorGUILayout.Space(5f);
+
+            _Extensions = EditorGUILayout.Foldout(_Extensions, "Extensions");
+
+            if (_Extensions)
+            {
+                l_ToType.boolValue = EditorGUILayout.ToggleLeft("To Type",l_ToType.boolValue);
+
+                if (l_ToType.boolValue)
+                {
+                    for (int i = 0; i < _Enum.Size; i++)
+                    {
+                        _L_T.Add("");
+                        EditorGUI.indentLevel++;
+                        EditorGUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"Id : ({l_IntValue.GetArrayElementAtIndex(i).intValue}, {l_StringValue.GetArrayElementAtIndex(i).stringValue})", styleLabel, GUILayout.MaxWidth(150));
+                        _L_T[i] = EditorGUILayout.TextField(l_TypeValue.GetArrayElementAtIndex(i).stringValue);
+                        EditorGUI.indentLevel--;
+                        EditorGUILayout.EndHorizontal();
+                    }
+                    l_TypeValue.SetUnderlyingValue(_L_T);
+                }
+
+            }
             serializedObject.ApplyModifiedProperties();
         }
 
